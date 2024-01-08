@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>VUI Audio Player</title>
+    <!-- don't mind these: -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- these load the stylesheets: -->
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Barlow:500"
+    />
+    <link rel="stylesheet" href="./css/reset.css" />
+    <link rel="stylesheet" href="./css/style.css" />
+    <!-- these load the teachable machine libraries: -->
+    <!-- more documentation at https://github.com/googlecreativelab/teachablemachine-libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
+    <!-- these load our code: -->
+    <script type="module" src="./js/model-runner.js"></script>
+    <script type="module" src="./js/bar-graph.js"></script>
+    <script src="triggers.js"></script>
+  </head>
+  <body>
+    <h1>Gesture Music Player</h1>
+    <h2>
+      Tilt your head left to rewind or right to forward. Hold up peace sign to
+      pause or thumbs up to play.
+    </h2>
+    <section id="model">
+      <div id="webcam-wrapper">
+        <div class="loader"></div>
+      </div>
+      <div id="graph-wrapper"></div>
+    </section>
+    <section id="info">
+      <p>
+        This machine learning model was made using
+        <a href="https://teachablemachine.withgoogle.com/"
+          >Teachable Machine.</a
+        >
+      </p>
+    </section>
+
+    <script type="module">
+      import { setupModel } from "./js/model-runner.js";
+      import { setupBarGraph, updateBarGraph } from "./js/bar-graph.js";
+
+      //           _____             .|                      _.._     ,.--.
+      //   _.._    \  __`'.        .' |_      _  __  ___    / .. `.  //    \
+      //  / .. `.   | |-.\ \ .-. .'     |    | |/  `.'  `. / /__\  \ \\    /
+      // / /__\  \  | |   \ ||_|'--.  .-'    |  .-. .-.  '| .-----'`  `'--'
+      //| .-----'`  | |   / |.-.   |  |      | |  | |  | | \ '-...--. ,.--.
+      // \ '-...--. | |_.' /|| |   |  '.'    | |  | |  | |  `. ___.' //    \
+      //  `. ___.' /_____.'/ | |   |   /     |_|  |_|  |_|           \\    /
+      //           \_____|/  |_|   `'-'                               `'--'
+
+      // setupBarGraph is defined in the js/bar-graph.js file
+      setupBarGraph(URL);
+      // setupModel is defined in the js/model-runner.js file
+      // we pass in another function: updateBarGraph (defined in the js/bar-graph.js file)
+      // setupModel will store the updateBarGraph function,
+      // and call it every time it has new prediction data from the model
+      setupModel(URL, (data) => {
+        updateBarGraph(data);
+
+        //console.log(data);
+
+        triggers(data);
+      });
+    </script>
+
+    <img
+      src="https://cdn.glitch.global/0e43efa3-f8ad-4286-8c4d-731da8b81ab9/1.jpeg?v=1683696342215"
+      id="background"
+    />
+    <audio
+      src="https://cdn.glitch.global/0e43efa3-f8ad-4286-8c4d-731da8b81ab9/Ride%20or%20Die.mp3?v=1683696345712"
+      id="song"
+    ></audio>
+
+    <div class="container">
+      <div class="box"></div>
+      <img
+        src="https://cdn.glitch.global/0e43efa3-f8ad-4286-8c4d-731da8b81ab9/1.jpeg?v=1683696342215"
+        id="thumbnail"
+      />
+
+      <img
+        src="https://cdn.glitch.global/0e43efa3-f8ad-4286-8c4d-731da8b81ab9/play.png?v=1683696345367"
+        onclick="playPause()"
+        id="play-pause"
+      />
+      <img
+        src="https://cdn.glitch.global/0e43efa3-f8ad-4286-8c4d-731da8b81ab9/forward.png?v=1683696344239"
+        onclick="nextSong()"
+        id="next-song"
+      />
+      <img
+        src="https://cdn.glitch.global/0e43efa3-f8ad-4286-8c4d-731da8b81ab9/backward.png?v=1683696343379"
+        onclick="previousSong()"
+        id="previous-song"
+      />
+
+      <div class="song-artist">NCS</div>
+      <div class="song-title">Ride or Die</div>
+
+      <input
+        type="range"
+        id="progress-bar"
+        min="0"
+        max=""
+        value="0"
+        onchange="changeProgressBar()"
+      />
+
+      <div class="currentTime"></div>
+      <div class="durationTime"></div>
+    </div>
+
+    <script src="musicPlayer.js"></script>
+  </body>
+</html>
